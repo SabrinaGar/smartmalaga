@@ -8,9 +8,20 @@ export default defineNuxtConfig({
     "@nuxt/content",
     "@nuxt/ui",
     "@nuxt/fonts",
-    "@nuxt/eslint"
+    "@nuxt/eslint",
   ],
-  css: ["bootstrap/dist/css/bootstrap.min.css",
-        "leaflet/dist/leaflet.css"
-  ]
+  css: ["leaflet/dist/leaflet.css", "~/assets/css/main.css"],
+  ui: {
+    themes: {
+      default: {
+        isDark: false,
+      },
+    },
+    theme: {
+      colors: ["primary", "secondary", "success", "info", "warning", "error"],
+    },
+    primary: "green",
+    icons: "heroicons",
+    colorMode: false,
+  },
 });

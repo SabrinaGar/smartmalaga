@@ -2,13 +2,20 @@
 import logo from "@/assets/logo.png";
 
 const state = reactive({
+  name: "",
   email: "",
   password: "",
+  confirmPassword: "",
 });
 
-function onSubmit() {
-  console.log("Email:", state.email);
-  console.log("Password:", state.password);
+function onRegister() {
+  if (state.password !== state.confirmPassword) {
+    alert("Las contraseñas no coinciden");
+    return;
+  }
+
+  console.log("Registrando usuario:", state);
+  // Aquí puedes hacer la llamada a tu API de registro
 }
 </script>
 
@@ -21,25 +28,32 @@ function onSubmit() {
           <img :src="logo" alt="Smartmalaga Logo" class="h-24 md:h-32 w-auto" />
         </div>
 
-        <!-- Form content -->
+        <!-- Form -->
         <div class="w-full md:w-2/3 space-y-6">
-          <!-- Title -->
           <h2
             class="text-2xl font-semibold text-center md:text-left text-gray-800"
           >
-            Iniciar sesión
+            Crear cuenta
           </h2>
 
-          <UForm :state="state" class="space-y-4" @submit="onSubmit">
-            <UFormField label="Email" name="email">
-              <UInput v-model="state.email" />
+          <UForm :state="state" class="space-y-4" @submit="onRegister">
+            <UFormField label="Nombre" name="name">
+              <UInput v-model="state.name" />
             </UFormField>
 
-            <UFormField label="Password" name="password">
+            <UFormField label="Email" name="email">
+              <UInput v-model="state.email" type="email" />
+            </UFormField>
+
+            <UFormField label="Contraseña" name="password">
               <UInput v-model="state.password" type="password" />
             </UFormField>
 
-            <UButton type="submit" class="w-1/3">Entrar</UButton>
+            <UFormField label="Confirmar contraseña" name="confirmPassword">
+              <UInput v-model="state.confirmPassword" type="password" />
+            </UFormField>
+
+            <UButton type="submit" size="sm" class="w-1/3">Registrarse</UButton>
           </UForm>
         </div>
       </div>

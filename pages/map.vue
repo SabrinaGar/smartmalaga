@@ -6,5 +6,5 @@
 </template>
 
 <script setup>
-import Map from "@/components/MapComponent.vue";
+import Map from "~/components/ParkingMap.client.vue";
 </script>

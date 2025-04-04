@@ -1,12 +1,15 @@
 <template>
-  <div id="map" ref="mapContainer"></div>
+  <div class="map-container">
+    <div id="map" ref="mapContainer"></div>
+    <ParkingDetails v-if="selectedParking" :parking="selectedParking" />
+  </div>
 </template>
 
 <script setup>
 import { onMounted, ref } from "vue";
-import L from "leaflet";
 
 const mapContainer = ref(null);
+const selectedParking = ref(null);
 
 // Datos de ejemplo (deberías obtener estos datos de tu API o BD)
 const parkingData = [
@@ -40,10 +43,13 @@ const getColor = (available, total) => {
   if (percentage > 20) return "orange"; // Entre 20% y 50%
   return "red"; // Menos del 20% libre
 };
-
-onMounted(() => {
+const showParkingInfo = (parking) => {
+  selectedParking.value = parking;
+};
+onMounted(async () => {
   if (!mapContainer.value) return;
-
+  const L = await import("leaflet");
+  await import("leaflet/dist/leaflet.css");
   const map = L.map(mapContainer.value).setView([36.7213028, -4.4216366], 13);
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
