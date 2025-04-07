@@ -2,6 +2,10 @@
 export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
   devtools: { enabled: true },
+  runtimeConfig: {
+    AZURE_STORAGE_CONNECTION_STRING:
+      process.env.AZURE_STORAGE_CONNECTION_STRING,
+  },
 
   modules: [
     "@nuxt/icon",
