@@ -6,70 +6,112 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, onBeforeUnmount } from "vue";
 
 const mapContainer = ref(null);
 const selectedParking = ref(null);
+let map = null;
+let markers = [];
+let intervalId = null;
 
-// Datos de ejemplo (deberías obtener estos datos de tu API o BD)
-const parkingData = [
-  {
-    name: "Parking Alcazaba",
-    lat: 36.7213,
-    lon: -4.4216,
-    available: 50,
-    total: 100,
-  },
-  {
-    name: "Parking Muelle Uno",
-    lat: 36.719,
-    lon: -4.4162,
-    available: 20,
-    total: 150,
-  },
-  {
-    name: "Parking El Palo",
-    lat: 36.7202,
-    lon: -4.3915,
-    available: 5,
-    total: 80,
-  },
+const staticParkingData = [
+  { codigo: "AL", name: "Alcazaba", lat: 36.729, lon: -4.4376 },
+  { codigo: "MA", name: "Plaza de la Marina", lat: 36.71797, lon: -4.42085 },
+  { codigo: "CA", name: "Camas", lat: 36.71944, lon: -4.4247 },
+  { codigo: "PA", name: "El Palo", lat: 36.72116, lon: -4.36088 },
 ];
 
-// Función para calcular color según ocupación
-const getColor = (available, total) => {
-  const percentage = (available / total) * 100;
-  if (percentage > 50) return "green"; // Más del 50% libre
-  if (percentage > 20) return "orange"; // Entre 20% y 50%
-  return "red"; // Menos del 20% libre
+const getColor = (available) => {
+  if (available > 200) return "green";
+  if (available > 0) return "orange";
+  return "red";
 };
+
+function parseOccupancyCSV(csv) {
+  const lines = csv.trim().split("\n");
+  const latestByCode = {};
+
+  for (const line of lines) {
+    const [code, datetime, availableStr] = line.split(",");
+    const available = parseFloat(availableStr);
+
+    if (
+      !latestByCode[code] ||
+      new Date(datetime) > new Date(latestByCode[code].date)
+    ) {
+      latestByCode[code] = { date: datetime, value: available };
+    }
+  }
+
+  return latestByCode;
+}
+
+function mergeParkingData(staticData, occupancyData) {
+  return staticData.map((parking) => {
+    const occ = occupancyData[parking.codigo];
+    return {
+      ...parking,
+      available: occ ? Math.round(occ.value) : 0,
+    };
+  });
+}
+
 const showParkingInfo = (parking) => {
   selectedParking.value = parking;
 };
+
+async function updateMapData() {
+  try {
+    const res = await fetch("/api/blob?name=merged_parking_weather");
+    const blobData = await res.json();
+    const csv = blobData.content;
+    const occupancyData = parseOccupancyCSV(csv);
+    const parkingData = mergeParkingData(staticParkingData, occupancyData);
+
+    // Limpiar marcadores anteriores
+    markers.forEach((m) => m.remove());
+    markers = [];
+
+    parkingData.forEach((parking) => {
+      const color = getColor(parking.available);
+
+      const marker = L.circleMarker([parking.lat, parking.lon], {
+        color,
+        radius: 10,
+        fillOpacity: 0.8,
+      })
+        .addTo(map)
+        .bindPopup(
+          `<b>${parking.name}</b><br>Disponibles: ${parking.available}`
+        )
+        .on("click", () => showParkingInfo(parking));
+
+      markers.push(marker);
+    });
+  } catch (error) {
+    console.error("Error actualizando datos del mapa:", error);
+  }
+}
+
 onMounted(async () => {
   if (!mapContainer.value) return;
+
   const L = await import("leaflet");
   await import("leaflet/dist/leaflet.css");
-  const map = L.map(mapContainer.value).setView([36.7213028, -4.4216366], 13);
+
+  map = L.map(mapContainer.value).setView([36.7213028, -4.4216366], 13);
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "&copy; OpenStreetMap contributors",
   }).addTo(map);
 
-  parkingData.forEach((parking) => {
-    const color = getColor(parking.available, parking.total);
+  await updateMapData();
 
-    L.circleMarker([parking.lat, parking.lon], {
-      color,
-      radius: 10, // Ajusta el tamaño del círculo
-      fillOpacity: 0.8,
-    })
-      .addTo(map)
-      .bindPopup(
-        `<b>${parking.name}</b><br>Disponibles: ${parking.available}/${parking.total}`
-      )
-      .on("click", () => showParkingInfo(parking));
-  });
+  intervalId = setInterval(updateMapData, 60000);
+});
+
+onBeforeUnmount(() => {
+  if (intervalId) clearInterval(intervalId);
 });
 </script>
 
