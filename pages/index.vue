@@ -14,7 +14,7 @@
 <script setup>
 const blobName = "merged_parking_weather"; // puede venir de un input o selección
 
-const { data, error } = await useFetch(`/api/blob`, {
+const { data } = await useFetch(`/api/blob`, {
   query: { name: blobName },
 });
 
