@@ -19,6 +19,42 @@ const staticParkingData = [
   { codigo: "MA", name: "Plaza de la Marina", lat: 36.71797, lon: -4.42085 },
   { codigo: "CA", name: "Camas", lat: 36.71944, lon: -4.4247 },
   { codigo: "PA", name: "El Palo", lat: 36.72116, lon: -4.36088 },
+  {
+    codigo: "AN",
+    name: "Av. Andalucía",
+    lat: 36.71762484287124,
+    lon: -4.427325331154205,
+  },
+  {
+    codigo: "TE",
+    name: "Tejón y Rodríguez",
+    lat: 36.72363802291698,
+    lon: -4.421589451738778,
+  },
+  {
+    codigo: "CE",
+    name: "Cervantes",
+    lat: 36.71988077304604,
+    lon: -4.410103992612849,
+  },
+  {
+    codigo: "CE",
+    name: "Carlos de Haya",
+    lat: 36.72173619512131,
+    lon: -4.449120476086551,
+  },
+  {
+    codigo: "SJ",
+    name: "San Juan",
+    lat: 36.71803342522634,
+    lon: -4.433768841526088,
+  },
+  {
+    codigo: "PB",
+    name: "Pio Baroja",
+    lat: 36.720467400258684,
+    lon: -4.364769099999999,
+  },
 ];
 
 const getColor = (available) => {
