@@ -5,6 +5,10 @@
       class="bg-white shadow-md px-6 py-4 flex justify-between items-center flex-wrap"
     >
       <h1 class="text-xl font-semibold text-gray-800">Smartmalaga Parkings</h1>
+      <div class="text-sm text-gray-600 flex items-center gap-4">
+        <span v-if="temperatura">🌡️ {{ temperatura }}°C</span>
+        <span v-if="precipitacion">🌧️ {{ precipitacion }} mm</span>
+      </div>
 
       <!-- Dropdown personalizado con Tailwind -->
       <div class="relative">
@@ -83,6 +87,8 @@ const mapContainer = ref(null);
 const selectedParking = ref(null);
 const parkingOptions = ref([]);
 const isOpen = ref(false);
+const temperatura = ref(null);
+const precipitacion = ref(null);
 let map = null;
 let markers = [];
 let intervalId = null;
@@ -141,8 +147,10 @@ function parseOccupancyCSV(csv) {
   const latestByCode = {};
 
   for (const line of lines) {
-    const [code, datetime, availableStr] = line.split(",");
+    const [code, datetime, availableStr, tempStr, precStr] = line.split(",");
     const available = parseFloat(availableStr);
+    temperatura.value = parseFloat(tempStr).toFixed(1);
+    precipitacion.value = parseFloat(precStr).toFixed(1);
 
     if (
       !latestByCode[code] ||
