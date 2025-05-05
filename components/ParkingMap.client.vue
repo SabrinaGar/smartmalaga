@@ -183,16 +183,13 @@ function selectParking(parking) {
 function focusOnParking(parking) {
   if (!parking || !map) return;
 
-  // Animación de zoom al parking seleccionado
   map.flyTo([parking.lat, parking.lon], 17, {
     duration: 1,
     easeLinearity: 0.25,
   });
 
-  // Actualizar parking seleccionado
   selectedParking.value = parking;
 
-  // Resaltar marcador seleccionado
   markers.forEach((marker) => {
     if (marker.options.parkingCode === parking.codigo) {
       marker.openPopup();
@@ -217,14 +214,11 @@ async function updateMapData() {
     const occupancyData = parseOccupancyCSV(csv);
     const parkingData = mergeParkingData(staticParkingData, occupancyData);
 
-    // Actualizar opciones del dropdown
     parkingOptions.value = parkingData;
 
-    // Limpiar marcadores existentes
     markers.forEach((m) => m.remove());
     markers = [];
 
-    // Crear nuevos marcadores
     parkingData.forEach((parking) => {
       const marker = L.circleMarker([parking.lat, parking.lon], {
         radius: 10,
@@ -246,7 +240,6 @@ async function updateMapData() {
       markers.push(marker);
     });
 
-    // Si hay un parking seleccionado, actualizar su vista
     if (selectedParking.value) {
       const currentParking = parkingData.find(
         (p) => p.codigo === selectedParking.value.codigo
@@ -263,23 +256,18 @@ async function updateMapData() {
 onMounted(async () => {
   if (!mapContainer.value) return;
 
-  // Importación dinámica de Leaflet
   const L = await import("leaflet");
   await import("leaflet/dist/leaflet.css");
 
-  // Inicializar mapa
   map = L.map(mapContainer.value).setView([36.7213028, -4.4216366], 13);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "&copy; OpenStreetMap contributors",
   }).addTo(map);
 
-  // Cargar datos iniciales
   await updateMapData();
 
-  // Actualizar cada minuto
   intervalId = setInterval(updateMapData, 60000);
 
-  // Cerrar dropdown al hacer clic fuera
   document.addEventListener("click", (e) => {
     if (!e.target.closest(".relative")) {
       isOpen.value = false;

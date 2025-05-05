@@ -1,4 +1,3 @@
-// server/api/blob.ts
 import { BlobServiceClient } from "@azure/storage-blob";
 
 export default defineEventHandler(async (event) => {
@@ -12,7 +11,6 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  // Leer el nombre del blob desde query string
   const query = getQuery(event);
   const blobName = query.name as string;
 
