@@ -80,7 +80,7 @@ export default defineEventHandler(async (event) => {
   const content = await streamToString(downloadResponse.readableStreamBody);
 
   const parsed = parseOccupancyCSV(content);
-  console.log("Parsed occupancy data:", parsed);
+
   const parkingData = mergeParkingData(parsed);
 
   return {
