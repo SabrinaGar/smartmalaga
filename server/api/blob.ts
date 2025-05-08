@@ -17,22 +17,13 @@ const staticParkingData = [
 function parseOccupancyCSV(csv: string) {
   const lines = csv.trim().split("\n");
   const latestByCode: Record<string, { date: string; value: number }> = {};
+
   let temperatura: number | null = null;
   let precipitacion: number | null = null;
 
   for (const line of lines) {
-    const [code, datetime, availableStr, tempStr, precStr] = line.split(",");
+    const [code, datetime, availableStr] = line.split(",");
     const available = parseFloat(availableStr);
-
-    const tempVal = parseFloat(tempStr);
-    if (temperatura === null && !isNaN(tempVal)) {
-      temperatura = tempVal;
-    }
-
-    const precVal = parseFloat(precStr);
-    if (precipitacion === null && !isNaN(precVal)) {
-      precipitacion = precVal;
-    }
 
     if (
       !latestByCode[code] ||
@@ -41,6 +32,12 @@ function parseOccupancyCSV(csv: string) {
       latestByCode[code] = { date: datetime, value: available };
     }
   }
+
+  // Extraer temperatura y precipitación del último registro (última línea del CSV)
+  const lastLine = lines[lines.length - 1];
+  const [, , , tempStr, precStr] = lastLine.split(",");
+  temperatura = parseFloat(tempStr);
+  precipitacion = parseFloat(precStr);
 
   return { latestByCode, temperatura, precipitacion };
 }
