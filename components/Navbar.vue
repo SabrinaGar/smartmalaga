@@ -51,13 +51,6 @@
       </div>
     </div>
   </header>
-
-  <div v-if="isOpen">
-    <p>Dropdown is open</p>
-    <div v-for="parking in parkingOptions" :key="parking.codigo">
-      {{ parking.name }}
-    </div>
-  </div>
 </template>
 
 <script setup>

@@ -52,9 +52,13 @@ const weatherData = ref({ temperature: null, precipitation: null });
 const setSelectedParking = (parking) => {
   selectedParking.value = parking;
   isDropdownOpen.value = false;
+
+  // Call focusOnParking immediately after selection
+  focusOnParking(parking);
 };
+
 function focusOnParking(parking) {
-  if (!parking || !map) return;
+  if (!parking || !map || markers.length === 0) return;
 
   map.flyTo([parking.lat, parking.lon], 17, {
     duration: 1,
@@ -72,6 +76,7 @@ function focusOnParking(parking) {
     }
   });
 }
+
 async function updateMapData() {
   try {
     const res = await fetch("/api/blob?name=merged_parking_weather");
