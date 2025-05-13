@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div class="h-screen flex flex-col">
+    <!-- Navbar -->
     <Navbar
       :temperatura="weatherData.temperature"
       :precipitacion="weatherData.precipitation"
@@ -9,26 +10,29 @@
       @toggle-dropdown="isDropdownOpen = !isDropdownOpen"
       @select-parking="setSelectedParking"
     />
-    <!-- Mapa -->
-    <div class="p-4">
-      <div id="map" ref="mapContainer" class="w-full h-96 rounded-lg"></div>
-      <div
-        v-if="selectedParking"
-        class="mt-4 p-4 bg-white shadow-md rounded-lg"
-      >
-        <h2 class="text-lg font-semibold">{{ selectedParking.name }}</h2>
-        <p class="mt-2">
-          <span
-            class="inline-block w-3 h-3 rounded-full mr-2"
-            :style="`background-color: ${selectedParking.color};`"
-          >
-          </span>
-          Plazas disponibles: <strong>{{ selectedParking.available }}</strong>
-        </p>
-        <p class="text-sm text-gray-600">
-          Última actualización: {{ selectedParking.date }}
-        </p>
-      </div>
+
+    <!-- Main Content -->
+    <div class="flex flex-1">
+      <!-- Sidebar -->
+      <Sidebar @update-layer="handleLayerUpdate" />
+
+      <div id="map" ref="mapContainer" class="flex-1"></div>
+    </div>
+  </div>
+  <div class="p-4">
+    <div v-if="selectedParking" class="mt-4 p-4 bg-white shadow-md rounded-lg">
+      <h2 class="text-lg font-semibold">{{ selectedParking.name }}</h2>
+      <p class="mt-2">
+        <span
+          class="inline-block w-3 h-3 rounded-full mr-2"
+          :style="`background-color: ${selectedParking.color};`"
+        >
+        </span>
+        Plazas disponibles: <strong>{{ selectedParking.available }}</strong>
+      </p>
+      <p class="text-sm text-gray-600">
+        Última actualización: {{ selectedParking.date }}
+      </p>
     </div>
   </div>
 </template>
@@ -53,7 +57,6 @@ const setSelectedParking = (parking) => {
   selectedParking.value = parking;
   isDropdownOpen.value = false;
 
-  // Call focusOnParking immediately after selection
   focusOnParking(parking);
 };
 
@@ -122,6 +125,75 @@ async function updateMapData() {
     console.error("Error actualizando datos del mapa:", error);
   }
 }
+
+const taxiMarkers = [];
+const trafficLightMarkers = [];
+const busStopMarkers = [];
+
+const handleLayerUpdate = async ({ layer, visible }) => {
+  switch (layer) {
+    case "taxis":
+      if (visible) {
+        const taxiData = await fetchLayerData("/api/taxis");
+        taxiMarkers.push(...addMarkersToMap(taxiData, "blue"));
+      } else {
+        removeMarkersFromMap(taxiMarkers);
+        taxiMarkers.length = 0;
+      }
+      break;
+
+    case "trafficLights":
+      if (visible) {
+        const trafficLightData = await fetchLayerData("/api/trafficLights");
+        trafficLightMarkers.push(...addMarkersToMap(trafficLightData, "red"));
+      } else {
+        removeMarkersFromMap(trafficLightMarkers);
+        trafficLightMarkers.length = 0;
+      }
+      break;
+
+    case "busStops":
+      if (visible) {
+        const busStopData = await fetchLayerData("/api/busStops");
+        busStopMarkers.push(...addMarkersToMap(busStopData, "green"));
+      } else {
+        removeMarkersFromMap(busStopMarkers);
+        busStopMarkers.length = 0;
+      }
+      break;
+  }
+};
+
+const fetchLayerData = async (url) => {
+  try {
+    const res = await fetch(url);
+    return await res.json();
+  } catch (error) {
+    console.error(`Error fetching data from ${url}:`, error);
+    return [];
+  }
+};
+
+const addMarkersToMap = (data, color) => {
+  return data.map((item) => {
+    const marker = L.circleMarker([item.lat, item.lon], {
+      radius: 8,
+      fillColor: color,
+      color: "#000",
+      weight: 1,
+      opacity: 1,
+      fillOpacity: 0.8,
+    })
+      .addTo(map)
+      .bindPopup(`<b>${item.name || "Sin nombre"}</b>`);
+    return marker;
+  });
+};
+
+const removeMarkersFromMap = (markers) => {
+  markers.forEach((marker) => marker.remove());
+};
+
 onMounted(async () => {
   await nextTick();
   if (!mapContainer.value) return;
@@ -148,3 +220,11 @@ onBeforeUnmount(() => {
   if (map) map.remove();
 });
 </script>
+<style scoped>
+.flex {
+  display: flex;
+}
+.flex-1 {
+  flex: 1;
+}
+</style>
