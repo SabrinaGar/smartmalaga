@@ -28,9 +28,13 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { ref, onMounted, onBeforeUnmount, nextTick } from "vue";
+import { useMapLayers } from "~/composables/useMapLayers";
 
 const mapContainer = ref(null);
+const mapRef = ref(null);
+const LRef = ref(null); // <-- Add this line
+
 const selectedParking = ref(null);
 const parkingOptions = ref([]);
 const isOpen = ref(false);
@@ -72,6 +76,9 @@ function focusOnParking(parking) {
 }
 
 async function updateMapData() {
+  // Guard: Wait until LRef and map are ready
+  if (!LRef.value || !map) return;
+
   try {
     const res = await fetch("/api/blob?name=merged_parking_weather");
     const data = await res.json();
@@ -86,15 +93,16 @@ async function updateMapData() {
     markers = [];
 
     parkingData.forEach((parking) => {
-      const marker = L.circleMarker([parking.lat, parking.lon], {
-        radius: 10,
-        fillColor: parking.color,
-        color: "#000",
-        weight: 1,
-        opacity: 1,
-        fillOpacity: 0.8,
-        parkingCode: parking.codigo,
-      })
+      const marker = LRef.value
+        .circleMarker([parking.lat, parking.lon], {
+          radius: 10,
+          fillColor: parking.color,
+          color: "#000",
+          weight: 1,
+          opacity: 1,
+          fillOpacity: 0.8,
+          parkingCode: parking.codigo,
+        })
         .addTo(map)
         .bindPopup(
           `<b>${parking.name}</b><br>Disponibles: ${parking.available}`
@@ -117,79 +125,8 @@ async function updateMapData() {
   }
 }
 
-const taxiMarkers = [];
-const trafficLightMarkers = [];
-const busStopMarkers = [];
-
-const handleLayerUpdate = async ({ layer, visible }) => {
-  switch (layer) {
-    case "taxis":
-      if (visible) {
-        const TAXIS_URL =
-          "https://taxis.azurewebsites.net/api/get_paradas_taxi?";
-        const taxiData = await fetchLayerData(TAXIS_URL);
-        taxiMarkers.push(...addMarkersToMap(taxiData));
-      } else {
-        removeMarkersFromMap(taxiMarkers);
-        taxiMarkers.length = 0;
-      }
-      break;
-
-    case "trafficLights":
-      if (visible) {
-        const TRAFFICT_LIGHT_URL =
-          "https://semaforos.azurewebsites.net/api/get_semaforos?";
-        const trafficLightData = await fetchLayerData(TRAFFICT_LIGHT_URL);
-        trafficLightMarkers.push(...addMarkersToMap(trafficLightData));
-      } else {
-        removeMarkersFromMap(trafficLightMarkers);
-        trafficLightMarkers.length = 0;
-      }
-      break;
-
-    case "busStops":
-      if (visible) {
-        const BUS_URL =
-          "https://buses.azurewebsites.net/api/get_lineas_paradas?";
-        const busStopData = await fetchLayerData(BUS_URL);
-        const busStopIcon = L.icon({
-          iconUrl: "/icons/bus-stop-pointer-svgrepo-com.svg",
-          iconSize: [32, 32],
-          iconAnchor: [16, 32],
-        });
-        busStopMarkers.push(...addMarkersToMap(busStopData, busStopIcon));
-      } else {
-        removeMarkersFromMap(busStopMarkers);
-        busStopMarkers.length = 0;
-      }
-      break;
-  }
-};
-
-const fetchLayerData = async (url) => {
-  try {
-    const res = await fetch(url);
-    return await res.json();
-  } catch (error) {
-    console.error(`Error fetching data from ${url}:`, error);
-    return [];
-  }
-};
-
-const addMarkersToMap = (data, icon = null) => {
-  return data.map((item) => {
-    const markerOptions = {};
-    if (icon) markerOptions.icon = icon;
-    const marker = L.marker([item.lat, item.lon], markerOptions)
-      .addTo(map)
-      .bindPopup(`<b>${item.name || item.NOMBRE || "Sin nombre"}</b>`);
-    return marker;
-  });
-};
-
-const removeMarkersFromMap = (markers) => {
-  markers.forEach((marker) => marker.remove());
-};
+// --- Use the composable ---
+let handleLayerUpdate; // <-- Declare here
 
 onMounted(async () => {
   await nextTick();
@@ -197,10 +134,15 @@ onMounted(async () => {
   const L = await import("leaflet");
   await import("leaflet/dist/leaflet.css");
 
+  LRef.value = L; // <-- Set LRef
   map = L.map(mapContainer.value).setView([36.7213028, -4.4216366], 13);
+  mapRef.value = map;
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "&copy; OpenStreetMap contributors",
   }).addTo(map);
+
+  // Now that mapRef and LRef are set, call the composable
+  ({ handleLayerUpdate } = useMapLayers(mapRef, LRef.value));
 
   await updateMapData();
   intervalId = setInterval(updateMapData, 60000);
