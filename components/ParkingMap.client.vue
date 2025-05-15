@@ -1,23 +1,16 @@
 <template>
-  <div class="h-screen flex flex-col">
-    <!-- Navbar -->
-    <Navbar
-      :temperatura="weatherData.temperature"
-      :precipitacion="weatherData.precipitation"
-      :is-open="isDropdownOpen"
-      :parking-options="parkingOptions"
-      :selected-parking-name="selectedParking?.name || ''"
-      @toggle-dropdown="isDropdownOpen = !isDropdownOpen"
-      @select-parking="setSelectedParking"
-      @update-layer="handleLayerUpdate"
-    />
-
-    <!-- Main Content -->
-    <div class="flex flex-1">
-      <div id="map" ref="mapContainer" class="flex-1"></div>
-    </div>
-  </div>
+  <Navbar
+    :temperatura="weatherData.temperature"
+    :precipitacion="weatherData.precipitation"
+    :is-open="isDropdownOpen"
+    :parking-options="parkingOptions"
+    :selected-parking-name="selectedParking?.name || ''"
+    @toggle-dropdown="isDropdownOpen = !isDropdownOpen"
+    @select-parking="setSelectedParking"
+    @update-layer="handleLayerUpdate"
+  />
   <div class="p-4">
+    <div id="map" ref="mapContainer" class="w-full h-96 rounded-lg"></div>
     <div v-if="selectedParking" class="mt-4 p-4 bg-white shadow-md rounded-lg">
       <h2 class="text-lg font-semibold">{{ selectedParking.name }}</h2>
       <p class="mt-2">
