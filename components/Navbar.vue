@@ -1,9 +1,13 @@
 <template>
   <header
-    class="bg-white shadow-md px-6 py-4 flex justify-between items-center flex-wrap"
+    class="bg-white shadow-md px-4 py-2 flex flex-col sm:flex-row sm:justify-between sm:items-center flex-wrap gap-2"
   >
-    <h1 class="text-xl font-semibold text-gray-800">Smartmalaga Parkings</h1>
-    <div class="text-sm text-gray-600 flex items-center gap-4">
+    <h1 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-0">
+      Smartmalaga Parkings
+    </h1>
+    <div
+      class="text-sm text-gray-600 flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-4 overflow-x-auto"
+    >
       <span v-if="temperatura">🌡️ {{ temperatura }}°C</span>
       <span v-if="precipitacion">🌧️ {{ precipitacion }}%</span>
       <p>Paradas de Autobús</p>
@@ -36,7 +40,7 @@
         @change="toggleLayer('trafficLights')"
       />
     </div>
-    <div class="relative">
+    <div class="relative mt-2 sm:mt-0">
       <button
         @click="toggleDropdown"
         class="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
