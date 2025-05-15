@@ -61,30 +61,36 @@ function mergeParkingData(occupancyData: any) {
 }
 
 export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig();
-  const connectionString = config.AZURE_STORAGE_CONNECTION_STRING;
+  try {
+    const config = useRuntimeConfig();
+    const connectionString = config.AZURE_STORAGE_CONNECTION_STRING;
+    const query = getQuery(event);
+    const blobName = query.name as string;
 
-  const query = getQuery(event);
-  const blobName = query.name as string;
+    if (!blobName) {
+      throw new Error("Blob name is missing in the query.");
+    }
 
-  const blobServiceClient =
-    BlobServiceClient.fromConnectionString(connectionString);
-  const containerClient =
-    blobServiceClient.getContainerClient("databaseblobtfm1");
-  const blobClient = containerClient.getBlobClient(blobName);
+    const blobServiceClient =
+      BlobServiceClient.fromConnectionString(connectionString);
+    const containerClient =
+      blobServiceClient.getContainerClient("databaseblobtfm1");
+    const blobClient = containerClient.getBlobClient(blobName);
 
-  const downloadResponse = await blobClient.download();
-  const content = await streamToString(downloadResponse.readableStreamBody);
+    const downloadResponse = await blobClient.download();
+    const content = await streamToString(downloadResponse.readableStreamBody);
 
-  const parsed = parseOccupancyCSV(content);
+    const parsed = parseOccupancyCSV(content);
+    const parkingData = mergeParkingData(parsed);
 
-  const parkingData = mergeParkingData(parsed);
-
-  return {
-    temperatura: parsed.temperatura?.toFixed(1),
-    precipitacion: parsed.precipitacion?.toFixed(1),
-    parkings: parkingData,
-  };
+    return {
+      temperatura: parsed.temperatura?.toFixed(1),
+      precipitacion: parsed.precipitacion?.toFixed(1),
+      parkings: parkingData,
+    };
+  } catch (error) {
+    return { error: error.message };
+  }
 });
 
 async function streamToString(stream: Readable | null) {

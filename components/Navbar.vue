@@ -6,6 +6,35 @@
     <div class="text-sm text-gray-600 flex items-center gap-4">
       <span v-if="temperatura">🌡️ {{ temperatura }}°C</span>
       <span v-if="precipitacion">🌧️ {{ precipitacion }}%</span>
+      <p>Paradas de Autobús</p>
+      <img
+        :src="BusStopIcon"
+        alt="Added"
+        class="svn-icon w-4 h-4 align-middle"
+      />
+      <input
+        type="checkbox"
+        v-model="showBusStops"
+        @change="toggleLayer('busStops')"
+      />
+      <p>Paradas de Taxis</p>
+      <img :src="taxisIcon" alt="Added" class="svn-icon w-4 h-4 align-middle" />
+      <input
+        type="checkbox"
+        v-model="showTaxis"
+        @change="toggleLayer('taxis')"
+      />
+      <p>Semáforos</p>
+      <img
+        :src="trafficLightsIcon"
+        alt="Added"
+        class="svn-icon w-4 h-4 align-middle"
+      />
+      <input
+        type="checkbox"
+        v-model="showTrafficLights"
+        @change="toggleLayer('trafficLights')"
+      />
     </div>
     <div class="relative">
       <button
@@ -54,6 +83,11 @@
 </template>
 
 <script setup>
+import BusStopIcon from "~/public/icons/bus-stop-pointer-svgrepo-com.svg";
+import taxisIcon from "~/public/icons/taxi-taxi-stop-svgrepo-com.svg";
+import trafficLightsIcon from "~/public/icons/traffic-lights-traffic-light-svgrepo-com.svg";
+import { ref } from "vue";
+
 const props = defineProps({
   temperatura: {
     type: Number,
@@ -76,8 +110,10 @@ const props = defineProps({
     default: "",
   },
 });
-
-const emit = defineEmits(["toggle-dropdown", "select-parking"]);
+const showTaxis = ref(false);
+const showTrafficLights = ref(false);
+const showBusStops = ref(false);
+const emit = defineEmits(["toggle-dropdown", "select-parking", "update-layer"]);
 
 const toggleDropdown = () => {
   console.log("Dropdown toggled");
@@ -86,5 +122,24 @@ const toggleDropdown = () => {
 
 const handleParkingSelection = (parking) => {
   emit("select-parking", parking);
+};
+
+const toggleLayer = async (layerType) => {
+  switch (layerType) {
+    case "taxis":
+      emit("update-layer", { layer: "taxis", visible: showTaxis.value });
+      break;
+
+    case "trafficLights":
+      emit("update-layer", {
+        layer: "trafficLights",
+        visible: showTrafficLights.value,
+      });
+      break;
+
+    case "busStops":
+      emit("update-layer", { layer: "busStops", visible: showBusStops.value });
+      break;
+  }
 };
 </script>

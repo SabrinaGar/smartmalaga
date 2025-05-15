@@ -9,13 +9,11 @@
       :selected-parking-name="selectedParking?.name || ''"
       @toggle-dropdown="isDropdownOpen = !isDropdownOpen"
       @select-parking="setSelectedParking"
+      @update-layer="handleLayerUpdate"
     />
 
     <!-- Main Content -->
     <div class="flex flex-1">
-      <!-- Sidebar -->
-      <Sidebar @update-layer="handleLayerUpdate" />
-
       <div id="map" ref="mapContainer" class="flex-1"></div>
     </div>
   </div>
@@ -134,8 +132,10 @@ const handleLayerUpdate = async ({ layer, visible }) => {
   switch (layer) {
     case "taxis":
       if (visible) {
-        const taxiData = await fetchLayerData("/api/taxis");
-        taxiMarkers.push(...addMarkersToMap(taxiData, "blue"));
+        const TAXIS_URL =
+          "https://taxis.azurewebsites.net/api/get_paradas_taxi?";
+        const taxiData = await fetchLayerData(TAXIS_URL);
+        taxiMarkers.push(...addMarkersToMap(taxiData));
       } else {
         removeMarkersFromMap(taxiMarkers);
         taxiMarkers.length = 0;
@@ -144,8 +144,10 @@ const handleLayerUpdate = async ({ layer, visible }) => {
 
     case "trafficLights":
       if (visible) {
-        const trafficLightData = await fetchLayerData("/api/trafficLights");
-        trafficLightMarkers.push(...addMarkersToMap(trafficLightData, "red"));
+        const TRAFFICT_LIGHT_URL =
+          "https://semaforos.azurewebsites.net/api/get_semaforos?";
+        const trafficLightData = await fetchLayerData(TRAFFICT_LIGHT_URL);
+        trafficLightMarkers.push(...addMarkersToMap(trafficLightData));
       } else {
         removeMarkersFromMap(trafficLightMarkers);
         trafficLightMarkers.length = 0;
@@ -154,8 +156,15 @@ const handleLayerUpdate = async ({ layer, visible }) => {
 
     case "busStops":
       if (visible) {
-        const busStopData = await fetchLayerData("/api/busStops");
-        busStopMarkers.push(...addMarkersToMap(busStopData, "green"));
+        const BUS_URL =
+          "https://buses.azurewebsites.net/api/get_lineas_paradas?";
+        const busStopData = await fetchLayerData(BUS_URL);
+        const busStopIcon = L.icon({
+          iconUrl: "/icons/bus-stop-pointer-svgrepo-com.svg",
+          iconSize: [32, 32],
+          iconAnchor: [16, 32],
+        });
+        busStopMarkers.push(...addMarkersToMap(busStopData, busStopIcon));
       } else {
         removeMarkersFromMap(busStopMarkers);
         busStopMarkers.length = 0;
@@ -174,18 +183,13 @@ const fetchLayerData = async (url) => {
   }
 };
 
-const addMarkersToMap = (data, color) => {
+const addMarkersToMap = (data, icon = null) => {
   return data.map((item) => {
-    const marker = L.circleMarker([item.lat, item.lon], {
-      radius: 8,
-      fillColor: color,
-      color: "#000",
-      weight: 1,
-      opacity: 1,
-      fillOpacity: 0.8,
-    })
+    const markerOptions = {};
+    if (icon) markerOptions.icon = icon;
+    const marker = L.marker([item.lat, item.lon], markerOptions)
       .addTo(map)
-      .bindPopup(`<b>${item.name || "Sin nombre"}</b>`);
+      .bindPopup(`<b>${item.name || item.NOMBRE || "Sin nombre"}</b>`);
     return marker;
   });
 };
