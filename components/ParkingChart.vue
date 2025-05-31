@@ -32,6 +32,25 @@ const props = defineProps({
 const { data: predictions } = await useFetch("/api/blob-predictions");
 const chartData = ref({ labels: [], datasets: [] });
 
+// Chart.js options for mobile
+const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { display: false },
+  },
+  scales: {
+    x: {
+      ticks: {
+        maxRotation: 45,
+        minRotation: 45,
+        autoSkip: true,
+        maxTicksLimit: 6,
+      },
+    },
+  },
+};
+
 watch(
   [predictions, () => props.parkingCode],
   ([newPredictions, newParkingCode]) => {
@@ -44,7 +63,18 @@ watch(
       (a, b) =>
         new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
     );
-    const labels = parkingPreds.map((p: any) => p.timestamp);
+    const labels = parkingPreds.map((p: any) => {
+      const date = new Date(p.timestamp);
+      // Format: DD/MM HH:mm
+      return `${date.getDate().toString().padStart(2, "0")}/${(
+        date.getMonth() + 1
+      )
+        .toString()
+        .padStart(2, "0")} ${date.getHours().toString().padStart(2, "0")}:${date
+        .getMinutes()
+        .toString()
+        .padStart(2, "0")}`;
+    });
     const datasets = [
       {
         label: newParkingCode,
@@ -61,7 +91,14 @@ watch(
 
 <template>
   <ClientOnly>
-    <Line v-if="chartData.labels.length" :data="chartData" />
-    <div v-else>Selecciona un parking para ver las predicciones.</div>
+    <div style="overflow-x: auto; width: 100%">
+      <div style="min-width: 400px; height: 250px">
+        <Line
+          v-if="chartData.labels.length"
+          :data="chartData"
+          :options="chartOptions"
+        />
+      </div>
+    </div>
   </ClientOnly>
 </template>
