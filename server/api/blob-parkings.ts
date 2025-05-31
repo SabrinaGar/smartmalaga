@@ -1,5 +1,5 @@
 import { BlobServiceClient } from "@azure/storage-blob";
-import { Readable } from "stream";
+import type { Readable } from "stream";
 
 const staticParkingData = [
   { codigo: "AL", name: "Alcazaba", lat: 36.729, lon: -4.4376 },

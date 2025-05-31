@@ -5,6 +5,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     AZURE_STORAGE_CONNECTION_STRING:
       process.env.AZURE_STORAGE_CONNECTION_STRING,
+    AZURE_STORAGE_PREDICTION_CONNECTION_STRING:
+      process.env.AZURE_STORAGE_PREDICTION_CONNECTION_STRING,
   },
 
   modules: [

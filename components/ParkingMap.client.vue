@@ -21,6 +21,10 @@
         </span>
         Plazas disponibles: <strong>{{ selectedParking.available }}</strong>
       </p>
+      <div class="p-4">
+        <h1 class="text-xl font-bold mb-4">Predicted Parking Occupation</h1>
+        <ParkingChart :parking-code="selectedParking?.codigo" />
+      </div>
       <p class="text-sm text-gray-600">
         Última actualización: {{ selectedParking.date }}
       </p>
@@ -80,7 +84,7 @@ async function updateMapData() {
   if (!LRef.value || !map) return;
 
   try {
-    const res = await fetch("/api/blob?name=merged_parking_weather");
+    const res = await fetch("/api/blob-parkings?name=merged_parking_weather");
     const data = await res.json();
 
     temperatura.value = data.temperatura;
