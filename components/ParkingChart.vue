@@ -45,7 +45,7 @@ const chartOptions = {
         maxRotation: 45,
         minRotation: 45,
         autoSkip: true,
-        maxTicksLimit: 6,
+        maxTicksLimit: 4,
       },
     },
   },
@@ -91,7 +91,7 @@ watch(
 
 <template>
   <ClientOnly>
-    <div style="overflow-x: auto; width: 100%">
+    <div class="chart-scroll-wrapper">
       <div style="min-width: 400px; height: 250px">
         <Line
           v-if="chartData.labels.length"
@@ -102,3 +102,14 @@ watch(
     </div>
   </ClientOnly>
 </template>
+
+<style scoped>
+.chart-scroll-wrapper {
+  width: 100%;
+}
+@media (max-width: 640px) {
+  .chart-scroll-wrapper {
+    overflow-x: auto;
+  }
+}
+</style>
