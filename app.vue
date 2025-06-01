@@ -9,7 +9,7 @@ import { onMounted } from "vue";
 onMounted(() => {
   // Script inline: window.chtlConfig = {...}
   const configScript = document.createElement("script");
-  configScript.innerHTML = `window.chtlConfig = { chatbotId: "2558883383" };`;
+  configScript.innerHTML = `window.chtlConfig = { chatbotId: "1351377169" };`;
   document.head.appendChild(configScript);
 
   // Script externo
