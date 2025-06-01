@@ -22,7 +22,9 @@
         Plazas disponibles: <strong>{{ selectedParking.available }}</strong>
       </p>
       <div class="p-4">
-        <h1 class="text-xl font-bold mb-4">Predicted Parking Occupation</h1>
+        <h1 class="text-xl font-bold mb-4">
+          Predicción de ocupación de parking
+        </h1>
         <ParkingChart :parking-code="selectedParking?.codigo" />
       </div>
       <p class="text-sm text-gray-600">
@@ -109,7 +111,11 @@ async function updateMapData() {
         })
         .addTo(map)
         .bindPopup(
-          `<b>${parking.name}</b><br>Disponibles: ${parking.available}`
+          `<b>${parking.name}</b><br>
+           Disponibles: ${parking.available}<br>
+           <a href="https://www.google.com/maps/dir/?api=1&destination=${parking.lat},${parking.lon}" target="_blank" rel="noopener">
+             Ir a Google Maps
+           </a>`
         )
         .on("click", () => {
           selectedParking.value = parking;
