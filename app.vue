@@ -16,7 +16,7 @@ onMounted(() => {
   const embedScript = document.createElement("script");
   embedScript.async = true;
   embedScript.src = "https://chatling.ai/js/embed.js";
-  embedScript.setAttribute("data-id", "2558883383");
+  embedScript.setAttribute("data-id", "1351377169");
   embedScript.id = "chtl-script";
   embedScript.type = "text/javascript";
   document.head.appendChild(embedScript);
