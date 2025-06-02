@@ -92,6 +92,12 @@ async function updateMapData() {
     temperatura.value = data.temperatura;
     precipitacion.value = data.precipitacion;
 
+    // Add this line to sync with Navbar props
+    weatherData.value = {
+      temperature: data.temperatura,
+      precipitation: data.precipitacion,
+    };
+
     const parkingData = data.parkings;
     parkingOptions.value = parkingData;
 
@@ -112,8 +118,13 @@ async function updateMapData() {
         .addTo(map)
         .bindPopup(
           `<b>${parking.name}</b><br>
-           Disponibles: ${parking.available}<br>
-           <a href="https://www.google.com/maps/dir/?api=1&destination=${parking.lat},${parking.lon}" target="_blank" rel="noopener">
+           Disponibles: ${parking.available}
+           <p>🔌Carga de Vehículos electricos:${
+             parking.electricCharger ? `Si` : `No`
+           }</p>
+           <a href="https://www.google.com/maps/dir/?api=1&destination=${
+             parking.lat
+           },${parking.lon}" target="_blank" rel="noopener">
              Ir a Google Maps
            </a>`
         )

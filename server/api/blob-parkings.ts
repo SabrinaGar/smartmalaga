@@ -2,16 +2,76 @@ import { BlobServiceClient } from "@azure/storage-blob";
 import type { Readable } from "stream";
 
 const staticParkingData = [
-  { codigo: "AL", name: "Alcazaba", lat: 36.729, lon: -4.4376 },
-  { codigo: "MA", name: "Plaza de la Marina", lat: 36.71797, lon: -4.42085 },
-  { codigo: "CA", name: "Camas", lat: 36.71944, lon: -4.4247 },
-  { codigo: "PA", name: "El Palo", lat: 36.72116, lon: -4.36088 },
-  { codigo: "AN", name: "Av. Andalucía", lat: 36.71762, lon: -4.42732 },
-  { codigo: "TE", name: "Tejón y Rodríguez", lat: 36.72363, lon: -4.42158 },
-  { codigo: "CE", name: "Cervantes", lat: 36.71988, lon: -4.4101 },
-  { codigo: "CY", name: "Carlos de Haya", lat: 36.72173, lon: -4.44912 },
-  { codigo: "SJ", name: "San Juan", lat: 36.71803, lon: -4.43376 },
-  { codigo: "PB", name: "Pio Baroja", lat: 36.72046, lon: -4.36476 },
+  {
+    codigo: "AL",
+    name: "Alcazaba",
+    lat: 36.729,
+    lon: -4.4376,
+    electricCharger: false,
+  },
+  {
+    codigo: "MA",
+    name: "Plaza de la Marina",
+    lat: 36.71797,
+    lon: -4.42085,
+    electricCharger: true,
+  },
+  {
+    codigo: "CA",
+    name: "Camas",
+    lat: 36.71944,
+    lon: -4.4247,
+    electricCharger: false,
+  },
+  {
+    codigo: "PA",
+    name: "El Palo",
+    lat: 36.72116,
+    lon: -4.36088,
+    electricCharger: true,
+  },
+  {
+    codigo: "AN",
+    name: "Av. Andalucía",
+    lat: 36.71762,
+    lon: -4.42732,
+    electricCharger: true,
+  },
+  {
+    codigo: "TE",
+    name: "Tejón y Rodríguez",
+    lat: 36.72363,
+    lon: -4.42158,
+    electricCharger: false,
+  },
+  {
+    codigo: "CE",
+    name: "Cervantes",
+    lat: 36.71988,
+    lon: -4.4101,
+    electricCharger: false,
+  },
+  {
+    codigo: "CY",
+    name: "Carlos de Haya",
+    lat: 36.72173,
+    lon: -4.44912,
+    electricCharger: true,
+  },
+  {
+    codigo: "SJ",
+    name: "San Juan",
+    lat: 36.71803,
+    lon: -4.43376,
+    electricCharger: false,
+  },
+  {
+    codigo: "PB",
+    name: "Pio Baroja",
+    lat: 36.72046,
+    lon: -4.36476,
+    electricCharger: true,
+  },
 ];
 
 function parseOccupancyCSV(csv: string) {
