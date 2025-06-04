@@ -54,12 +54,17 @@ const chartOptions = {
 watch(
   [predictions, () => props.parkingCode],
   ([newPredictions, newParkingCode]) => {
-    if (!newPredictions || !newParkingCode || !newPredictions[newParkingCode]) {
+    if (
+      !newPredictions ||
+      !newParkingCode ||
+      !newPredictions[newParkingCode] ||
+      !Array.isArray(newPredictions[newParkingCode].predicciones)
+    ) {
       chartData.value = { labels: [], datasets: [] };
       return;
     }
     // Sort by timestamp ascending
-    const parkingPreds = [...newPredictions[newParkingCode]].sort(
+    const parkingPreds = [...newPredictions[newParkingCode].predicciones].sort(
       (a, b) =>
         new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
     );

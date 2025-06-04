@@ -47,6 +47,7 @@ export default defineEventHandler(async () => {
     }
 
     const downloaded = await streamToString(readableStream);
+    console.log(`Blob ${blobName} raw JSON:`, downloaded); // <-- Add this line
     results[id] = JSON.parse(downloaded);
   }
 
