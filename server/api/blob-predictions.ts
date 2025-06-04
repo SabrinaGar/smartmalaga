@@ -47,6 +47,7 @@ export default defineEventHandler(async () => {
     }
 
     const downloaded = await streamToString(readableStream);
+
     results[id] = JSON.parse(downloaded);
   }
 
@@ -58,9 +59,6 @@ async function streamToString(readableStream: any) {
   return await new Promise<string>((resolve, reject) => {
     const chunks: Uint8Array[] = [];
     readableStream.on("data", (data: Uint8Array) => chunks.push(data));
-    console.log("Reading stream data...");
-    console.log("Chunks length:", chunks.length);
-    console.log("First chunk length:", chunks[0]?.length || 0);
     readableStream.on("end", () =>
       resolve(Buffer.concat(chunks).toString("utf8"))
     );

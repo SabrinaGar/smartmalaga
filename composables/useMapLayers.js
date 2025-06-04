@@ -23,7 +23,6 @@ export function useMapLayers(map, L) {
     iconAnchor: [16, 32],
   });
 
-  // Define UTM zone 30N (EPSG:25830 or EPSG:32630)
   const utm30n = "+proj=utm +zone=30 +datum=WGS84 +units=m +no_defs";
   const wgs84 = "+proj=longlat +datum=WGS84 +no_defs";
 
@@ -109,7 +108,6 @@ export function useMapLayers(map, L) {
     switch (layer) {
       case "taxis":
         if (visible) {
-          console.log("Fetching taxi data...");
           const TAXIS_URL =
             "https://taxisesesa.azurewebsites.net/api/get_paradas_taxi?";
           const taxiData = await fetchLayerData(TAXIS_URL);
@@ -121,7 +119,6 @@ export function useMapLayers(map, L) {
         break;
       case "trafficLights":
         if (visible) {
-          console.log("Fetching traffic light data...");
           const TRAFFICT_LIGHT_URL =
             "https://semaforosesesa.azurewebsites.net/api/get_semaforos?";
           const trafficLightData = await fetchLayerData(TRAFFICT_LIGHT_URL);
@@ -135,7 +132,6 @@ export function useMapLayers(map, L) {
         break;
       case "busStops":
         if (visible) {
-          console.log("Fetching bus stop data...");
           const BUS_URL =
             "https://busesesa.azurewebsites.net/api/get_lineas_paradas?";
           const busStopData = await fetchLayerData(BUS_URL);

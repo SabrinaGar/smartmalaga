@@ -120,7 +120,6 @@ const showBusStops = ref(false);
 const emit = defineEmits(["toggle-dropdown", "select-parking", "update-layer"]);
 
 const toggleDropdown = () => {
-  console.log("Dropdown toggled");
   emit("toggle-dropdown");
 };
 

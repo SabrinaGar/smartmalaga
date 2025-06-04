@@ -5,7 +5,6 @@
       isOpen ? 'w-64' : 'w-16',
     ]"
   >
-    <!-- Botón para abrir/cerrar el Sidebar -->
     <div class="flex items-center justify-center h-16 border-b border-gray-300">
       <button
         @click="toggleSidebar"
@@ -16,7 +15,6 @@
       </button>
     </div>
 
-    <!-- Contenido del Sidebar -->
     <div v-if="isOpen" class="p-4">
       <h3 class="text-lg font-semibold mb-4">Capas del Mapa</h3>
       <div>
@@ -56,7 +54,7 @@
 <script setup>
 import { ref } from "vue";
 
-const isOpen = ref(true); // Sidebar abierto por defecto
+const isOpen = ref(true);
 const showTaxis = ref(false);
 const showTrafficLights = ref(false);
 const showBusStops = ref(false);
@@ -88,19 +86,19 @@ const toggleLayer = async (layerType) => {
 </script>
 
 <style scoped>
-/* Estilos básicos para el Sidebar */
+
 .flex {
   flex-direction: column;
   display: flex;
 }
 
-/* Estilo para el botón */
+
 button {
   cursor: pointer;
-  font-size: 24px; /* Tamaño del ícono */
+  font-size: 24px;
 }
 
-/* Estilo para el Sidebar */
+
 .fixed {
   z-index: 40;
 }
@@ -112,20 +110,18 @@ button {
   flex: 1;
 }
 
-/* Estilo para el Sidebar */
 .h-full {
-  height: calc(100% - 4rem); /* Ajusta 4rem según la altura del Navbar */
-}
+  height: calc(100% - 4rem);
 .w-64 {
-  width: 16rem; /* Ancho del Sidebar cuando está abierto */
+  width: 16rem;
 }
 .w-16 {
-  width: 4rem; /* Ancho del Sidebar cuando está cerrado */
+  width: 4rem;
 }
 .transition-all {
   transition: all 0.3s ease-in-out;
 }
 .size-5 {
-  font-size: 24px; /* Tamaño del ícono */
+  font-size: 24px;
 }
 </style>

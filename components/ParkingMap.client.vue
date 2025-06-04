@@ -92,7 +92,6 @@ async function updateMapData() {
     temperatura.value = data.temperatura;
     precipitacion.value = data.precipitacion;
 
-    // Add this line to sync with Navbar props
     weatherData.value = {
       temperature: data.temperatura,
       precipitation: data.precipitacion,
@@ -146,8 +145,7 @@ async function updateMapData() {
   }
 }
 
-// --- Use the composable ---
-let handleLayerUpdate; // <-- Declare here
+let handleLayerUpdate;
 
 onMounted(async () => {
   await nextTick();
@@ -155,14 +153,13 @@ onMounted(async () => {
   const L = await import("leaflet");
   await import("leaflet/dist/leaflet.css");
 
-  LRef.value = L; // <-- Set LRef
+  LRef.value = L;
   map = L.map(mapContainer.value).setView([36.7213028, -4.4216366], 13);
   mapRef.value = map;
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "&copy; OpenStreetMap contributors",
   }).addTo(map);
 
-  // Now that mapRef and LRef are set, call the composable
   ({ handleLayerUpdate } = useMapLayers(mapRef, LRef.value));
 
   await updateMapData();
