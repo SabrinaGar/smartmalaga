@@ -48,6 +48,9 @@ const chartOptions = {
         maxTicksLimit: 4,
       },
     },
+    y: {
+      beginAtZero: true,
+    },
   },
 };
 
